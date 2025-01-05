@@ -1,26 +1,22 @@
 const needle = require('needle');
 
-const breedNameDescription = (breedName) => {
+const fetchBreedDescription = (breedName, callback) => {
   const url = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
 
   needle.get(url, (err, res) => {
     if (err) {
-      console.error('Error:', err);
+      callback(err, null);
       return;
     }
 
-    // Let's print the response body to see what we get
-    console.log(res.body);
-
-    // Access the first entry and print out the description, if it exists
     if (res.body.length > 0) {
-      console.log('Description:', res.body[0].description);
+      // Pass null for error and the description for the result
+      callback(null, res.body[0].description);
     } else {
-      console.log('Breed not found.');
+      // No breed found, pass null for error and null for description
+      callback(null, null);
     }
   });
 };
 
-// Let's say you want to call this function with a command-line argument
-const breedName = process.argv[2];
-breedNameDescription(breedName);
+module.exports = { fetchBreedDescription };
